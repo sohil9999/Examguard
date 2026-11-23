@@ -1,0 +1,11 @@
+{
+  "name": "examguard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -n BACKEND,FRONTEND \"cd backend && ..\\.venv\\Scripts\\python.exe app.py\" \"npm --prefix frontend run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
