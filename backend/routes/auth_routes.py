@@ -97,6 +97,60 @@ def login():
 @auth_bp.route("/admin/login", methods=["POST"])
 def admin_login():
 
+    try:
+        data = request.get_json() or {}
+
+        email = data.get("email", "").lower().strip()
+        password = data.get("password", "")
+
+        print("ADMIN LOGIN: Request received")
+
+        admin = db.users.find_one({
+            "email": email,
+            "role": "admin"
+        })
+
+        print("ADMIN LOGIN: Database query completed")
+        print("ADMIN LOGIN: Admin found:", admin is not None)
+
+        if not admin:
+            return jsonify({
+                "message": "Admin account not found"
+            }), 401
+
+        password_valid = check_password_hash(
+            admin["password"], password
+        )
+
+        print("ADMIN LOGIN: Password verification completed")
+
+        if not password_valid:
+            return jsonify({
+                "message": "Invalid admin password"
+            }), 401
+
+        access_token = create_access_token(
+            identity=str(admin["_id"]),
+            additional_claims={"role": "admin"},
+            expires_delta=timedelta(hours=2)
+        )
+
+        print("ADMIN LOGIN: JWT generated successfully")
+
+        return jsonify({
+            "message": "Admin login successful",
+            "access_token": access_token,
+            "name": admin.get("name", "Admin")
+        }), 200
+
+    except Exception as e:
+        print("ADMIN LOGIN ERROR:", repr(e))
+
+        return jsonify({
+            "message": "Admin login failed",
+            "error": str(e)
+        }), 500
+
     data = request.get_json() or {}
 
     email = data.get("email", "").lower().strip()
