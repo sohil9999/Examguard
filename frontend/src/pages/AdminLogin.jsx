@@ -35,10 +35,17 @@ function AdminLogin() {
             navigate("/admin-dashboard");
 
         } catch (error) {
-            setMessage(
-                error.response?.data?.message ||
-                "Admin login failed. Please check your credentials."
-            );
+    console.error("ADMIN LOGIN ERROR:", error);
+    console.error("SERVER RESPONSE:", error.response?.data);
+    console.error("STATUS CODE:", error.response?.status);
+
+    setMessage(
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Unknown login error"
+    );
+
         } finally {
             setLoading(false);
         }
